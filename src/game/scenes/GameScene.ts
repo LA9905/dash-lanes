@@ -5,6 +5,7 @@ import { Coin } from '../objects/Coin';
 import { Pedestrian } from '../objects/Pedestrian';
 import { ScoreManager } from '../managers/ScoreManager';
 import { LevelManager, type LevelConfig } from '../managers/LevelManager';
+import { CrossTraffic } from '../objects/CrossTraffic';
 
 export class GameScene extends Phaser.Scene {
   private player!: Player;
@@ -33,6 +34,9 @@ export class GameScene extends Phaser.Scene {
   private levelUnlocked = false;
 
   private decorations: Phaser.GameObjects.Rectangle[] = [];
+
+  private crossTraffic!: Phaser.Physics.Arcade.Group;
+  private isHighway = false;
 
   constructor() {
     super('GameScene');
@@ -68,21 +72,33 @@ export class GameScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height / 2, width, height, 0x0f0f1a);
     this.createSideDecorations();
 
-    [90, 180, 270].forEach(x => {
+    this.isHighway = this.levelConfig.highwayMode;
+
+    const lanePositions = this.isHighway ? [50, 110, 180, 250, 310] : [90, 180, 270];
+    lanePositions.forEach(x => {
       this.add.rectangle(x, height / 2, 3, height, 0x1a1a3a).setAlpha(0.6);
     });
 
-    this.player = new Player(this, 180, 520);
+    this.player = new Player(this, 180, 520, this.isHighway);
 
     this.obstacles = this.physics.add.group();
     this.coins = this.physics.add.group();
     this.pedestrians = this.physics.add.group();
+    this.crossTraffic = this.physics.add.group();
     this.bullets = this.physics.add.group({ allowGravity: false });
 
     this.physics.add.overlap(this.player, this.obstacles, this.onHitObstacle as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
     this.physics.add.overlap(this.player, this.coins, this.onCollectCoin as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
     this.physics.add.overlap(this.player, this.pedestrians, this.onHitObstacle as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
     this.physics.add.overlap(this.bullets, this.obstacles, this.onBulletHitObstacle as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
+
+    this.physics.add.overlap(
+      this.player,
+      this.crossTraffic,
+      this.onHitObstacle as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+      undefined,
+      this
+    );
 
     this.add.text(16, 12, `Nivel ${this.currentLevel}: ${this.levelConfig.name}`, {
       fontFamily: 'Arial', fontSize: '16px', color: '#00ffcc'
@@ -229,27 +245,46 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    this.spawnTimer += delta;
+  this.spawnTimer += delta;
     if (this.spawnTimer >= this.nextSpawn * this.levelConfig.spawnRate) {
       this.spawnTimer = 0;
-      this.nextSpawn = Phaser.Math.Between(700, 1400);
+      this.nextSpawn = Phaser.Math.Between(400, 900); // más frecuente
       this.spawnItem();
     }
   }
 
-    private spawnItem() {
-    const laneX = [90, 180, 270][Phaser.Math.Between(0, 2)];
-    const rand = Math.random();
+  private spawnItem() {
+    const lanes = this.isHighway ? [50, 110, 180, 250, 310] : [90, 180, 270];
 
-    if (this.currentLevel >= 2 && rand < 0.12) {
-      const ped = new Pedestrian(this, laneX, -50, this.speed);
-      this.pedestrians.add(ped);
-    } else if (rand < this.levelConfig.obstacleChance) {
-      const obs = new Obstacle(this, laneX, -50, this.speed);
-      this.obstacles.add(obs);
-    } else {
-      const coin = new Coin(this, laneX, -50, this.speed);
-      this.coins.add(coin);
+    const count = Math.random() < 0.35 ? 2 : 1;
+
+    for (let i = 0; i < count; i++) {
+      const laneX = lanes[Phaser.Math.Between(0, lanes.length - 1)];
+      const roll = Math.random();
+
+      if (this.isHighway && Math.random() < 0.22) {
+        const y = Phaser.Math.Between(100, 380);
+        const fromLeft = Math.random() > 0.5;
+        const car = new CrossTraffic(this, y, this.speed, fromLeft);
+        this.crossTraffic.add(car);
+        continue;
+      }
+
+      // Peatones (abuelas) desde nivel 2 — probabilidad propia
+      if (this.currentLevel >= 2 && Math.random() < 0.20) {
+        const ped = new Pedestrian(this, laneX, -50, this.speed);
+        this.pedestrians.add(ped);
+        continue;
+      }
+
+      // Obstáculo o moneda
+      if (roll < this.levelConfig.obstacleChance) {
+        const obs = new Obstacle(this, laneX, -50, this.speed);
+        this.obstacles.add(obs);
+      } else {
+        const coin = new Coin(this, laneX, -50, this.speed);
+        this.coins.add(coin);
+      }
     }
   }
 
