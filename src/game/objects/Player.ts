@@ -50,6 +50,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  getLaneIndex(): number {
+    return this.currentLane;
+  }
+
+  getLanesCount(): number {
+    return this.lanes.length;
+  }
+
   jump() {
     const body = this.body as Phaser.Physics.Arcade.Body;
     if (body && (body.blocked.down || body.touching.down)) {
