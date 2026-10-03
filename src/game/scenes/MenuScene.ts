@@ -18,7 +18,6 @@ export class MenuScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const unlocked = LevelManager.getCurrentUnlockedLevel();
 
-    // Fondo degradado simulado
     this.add.rectangle(width / 2, height / 2, width, height, 0x0a0a18);
     this.add.rectangle(width / 2, 0, width, 160, 0x00ffcc, 0.08);
 
@@ -35,7 +34,6 @@ export class MenuScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '15px', color: '#888888'
     }).setOrigin(0.5);
 
-    // Lista de niveles (más compacta)
     LevelManager.LEVELS.forEach((lvl, i) => {
       const isUnlocked = lvl.level <= unlocked;
       const col = i % 2;
@@ -66,6 +64,14 @@ export class MenuScene extends Phaser.Scene {
     this.add.text(width / 2, height - 30, '← → carril  |  centro saltar  |  arriba disparar', {
       fontFamily: 'Arial', fontSize: '11px', color: '#555555'
     }).setOrigin(0.5);
+
+    const hubBtn = this.add.text(16, height - 28, '← Hub', {
+      fontFamily: 'Arial', fontSize: '14px', color: '#8888aa'
+    }).setInteractive({ useHandCursor: true });
+    hubBtn.on('pointerdown', () => {
+      this.menuMusic?.stop();
+      this.scene.start('HubScene');
+    });
 
     this.menuMusic = this.sound.add('menu', { loop: true, volume: 0.35 });
     this.menuMusic.play();

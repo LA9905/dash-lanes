@@ -166,8 +166,13 @@ export class GameScene extends Phaser.Scene {
       if (this.isGameOver) return;
       if (!this.audioUnlocked) this.unlockAudio();
 
-      // Zona de botones ABAJO-DERECHA (disparar y comprar)
+      // Zona botones ABAJO-DERECHA (disparar / comprar)
       if (pointer.y > height - 130 && pointer.x > width - 120) {
+        this.ignoreTouch = true;
+        return;
+      }
+      // Zona botón COMPRAR de arriba
+      if (pointer.y < 110 && pointer.x > width - 160) {
         this.ignoreTouch = true;
         return;
       }
@@ -191,6 +196,7 @@ export class GameScene extends Phaser.Scene {
       if (this.isGameOver || !pointer.isDown) return;
       if (this.ignoreTouch || this.laneChangedThisTouch) return;
       if (pointer.y > height - 130 && pointer.x > width - 120) return;
+      if (pointer.y < 110 && pointer.x > width - 160) return;
 
       const dx = pointer.x - this.swipeStartX;
       if (Math.abs(dx) > 18) {
@@ -207,6 +213,7 @@ export class GameScene extends Phaser.Scene {
         return;
       }
       if (pointer.y > height - 130 && pointer.x > width - 120) return;
+      if (pointer.y < 110 && pointer.x > width - 160) return;
 
       const dx = pointer.x - this.swipeStartX;
       const dy = pointer.y - this.swipeStartY;
@@ -267,14 +274,16 @@ export class GameScene extends Phaser.Scene {
     const { width } = this.scale;
     const bg = this.add.rectangle(0, 0, 130, 36, 0xff9800)
       .setInteractive({ useHandCursor: true });
-    const txt = this.add.text(0, 0, 'Balas +3 (10💰)', {
+    const txt = this.add.text(0, 0, 'Balas +3 (6💰)', {
       fontFamily: 'Arial', fontSize: '13px', color: '#000000'
     }).setOrigin(0.5);
 
     this.buyShotsBtn = this.add.container(width - 80, 70, [bg, txt]);
 
-    bg.on('pointerdown', () => {
-      if (CurrencyManager.spendCoins(3)) {
+    bg.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      this.ignoreTouch = true;
+      pointer.event?.stopPropagation?.();
+      if (CurrencyManager.spendCoins(6)) {
         this.shotsLeft = 3;
         this.totalCoinsText.setText(`💰 ${CurrencyManager.getTotalCoins()}`);
         this.buyShotsBtn?.destroy();
@@ -310,7 +319,7 @@ export class GameScene extends Phaser.Scene {
         .setScrollFactor(0)
         .setDepth(100);
 
-      this.add.text(width - 50, height - 40, '+3 💰3', {
+      this.add.text(width - 50, height - 40, '+3 💰6', {
         fontFamily: 'Arial Black', fontSize: '12px', color: '#000000'
       }).setOrigin(0.5).setDepth(101);
 
@@ -324,7 +333,7 @@ export class GameScene extends Phaser.Scene {
 
   private tryBuyShots() {
     if (!this.canShoot || this.isGameOver) return;
-    if (CurrencyManager.spendCoins(3)) {
+    if (CurrencyManager.spendCoins(6)) {
       this.shotsLeft += 3;
       this.totalCoinsText.setText(`💰 ${CurrencyManager.getTotalCoins()}`);
       this.updateShotsText();
@@ -479,8 +488,10 @@ export class GameScene extends Phaser.Scene {
       }
 
       // Abuelas
-      const pedChance = Math.max(0.04, 0.10 - this.currentLevel * 0.008);
-      if (!this.isHighway && this.currentLevel >= 2 && Math.random() < pedChance) {
+      const pedChance = this.isHighway
+        ? Math.max(0.05, 0.12 - this.currentLevel * 0.006)
+        : Math.max(0.04, 0.10 - this.currentLevel * 0.008);
+      if (this.currentLevel >= 2 && Math.random() < pedChance) {
         const ped = new Pedestrian(this, laneX, -50, this.speed);
         this.pedestrians.add(ped);
         continue;
@@ -654,7 +665,7 @@ export class GameScene extends Phaser.Scene {
 
     this.playSound('grandma_hit', 0.7);
 
-    const penalty = Math.min(2, CurrencyManager.getTotalCoins());
+    const penalty = Math.min(5, CurrencyManager.getTotalCoins());
     if (penalty > 0) {
       CurrencyManager.spendCoins(penalty);
       this.totalCoinsText.setText(`💰 ${CurrencyManager.getTotalCoins()}`);
@@ -685,13 +696,13 @@ export class GameScene extends Phaser.Scene {
     fuelObj.disableBody(true, true);
 
     // Solo llena si hay monedas suficientes (5)
-    if (CurrencyManager.getTotalCoins() >= 5) {
-      CurrencyManager.spendCoins(5);
+    if (CurrencyManager.getTotalCoins() >= 10) {
+      CurrencyManager.spendCoins(10);
       this.fuel = Math.min(100, this.fuel + 50);
       this.totalCoinsText.setText(`💰 ${CurrencyManager.getTotalCoins()}`);
       this.playSound('coin', 0.4);
 
-      const tip = this.add.text(this.player.x, this.player.y - 40, '-5 💰 +fuel', {
+      const tip = this.add.text(this.player.x, this.player.y - 40, '-10 💰 +fuel', {
         fontFamily: 'Arial', fontSize: '14px', color: '#4caf50'
       }).setOrigin(0.5);
       this.tweens.add({

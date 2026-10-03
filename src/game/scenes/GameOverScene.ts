@@ -101,13 +101,13 @@ export class GameOverScene extends Phaser.Scene {
       this.scene.start('GameScene', { level: this.finalLevel <= unlocked ? this.finalLevel : unlocked });
     });
 
-    // Botón Menú
-    const menuBg = this.add.rectangle(width / 2, height * 0.84, 220, 48, 0x222240)
+    // Menú de Dash Lanes
+    const menuBg = this.add.rectangle(width / 2, height * 0.82, 220, 44, 0x222240)
       .setInteractive({ useHandCursor: true })
       .setStrokeStyle(1, 0x3a3a5a);
-    this.add.text(width / 2, height * 0.84, 'MENÚ', {
+    this.add.text(width / 2, height * 0.82, 'MENÚ DASH LANES', {
       fontFamily: 'Arial',
-      fontSize: '18px',
+      fontSize: '16px',
       color: '#ccccdd'
     }).setOrigin(0.5);
 
@@ -115,6 +115,22 @@ export class GameOverScene extends Phaser.Scene {
     menuBg.on('pointerout', () => menuBg.setFillStyle(0x222240));
     menuBg.on('pointerdown', () => {
       this.scene.start('MenuScene');
+    });
+
+    // Hub del paquete
+    const hubBg = this.add.rectangle(width / 2, height * 0.91, 220, 40, 0x16162a)
+      .setInteractive({ useHandCursor: true })
+      .setStrokeStyle(1, 0x2a2a4a);
+    this.add.text(width / 2, height * 0.91, 'HUB JUEGOS', {
+      fontFamily: 'Arial',
+      fontSize: '15px',
+      color: '#8888aa'
+    }).setOrigin(0.5);
+
+    hubBg.on('pointerover', () => hubBg.setFillStyle(0x1e1e38));
+    hubBg.on('pointerout', () => hubBg.setFillStyle(0x16162a));
+    hubBg.on('pointerdown', () => {
+      this.scene.start('HubScene');
     });
 
     this.sound.play('game_over', { volume: 0.55 });
