@@ -13,6 +13,7 @@ type GameEntry = {
 
 export class HubScene extends Phaser.Scene {
   private menuMusic?: Phaser.Sound.BaseSound;
+  private muteBtn?: Phaser.GameObjects.Text;
 
   constructor() {
     super('HubScene');
@@ -20,6 +21,33 @@ export class HubScene extends Phaser.Scene {
 
   preload() {
     this.load.audio('menu', '/sounds/menu.mp3');
+  }
+
+  private isMuted(): boolean {
+    return localStorage.getItem('arcade_music_muted') === '1';
+  }
+
+  private setMuted(muted: boolean) {
+    localStorage.setItem('arcade_music_muted', muted ? '1' : '0');
+  }
+
+  private updateMuteLabel() {
+    if (this.muteBtn) {
+      this.muteBtn.setText(this.isMuted() ? '🔇 Música' : '🔊 Música');
+    }
+  }
+
+  private toggleMute() {
+    const next = !this.isMuted();
+    this.setMuted(next);
+    if (next) {
+      this.menuMusic?.stop();
+    } else {
+      try {
+        this.menuMusic?.play();
+      } catch (_) {}
+    }
+    this.updateMuteLabel();
   }
 
   create() {
@@ -48,13 +76,22 @@ export class HubScene extends Phaser.Scene {
       color: '#8888aa'
     }).setOrigin(0.5);
 
-        const games: GameEntry[] = [
+    // Botón silencio (arriba derecha)
+    this.muteBtn = this.add.text(width - 16, 16, '', {
+      fontFamily: 'Arial',
+      fontSize: '13px',
+      color: '#aaaaaa'
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+    this.updateMuteLabel();
+    this.muteBtn.on('pointerdown', () => this.toggleMute());
+
+    const games: GameEntry[] = [
       { id: 'dash', title: 'DASH LANES', subtitle: 'Esquiva · Salta · Dispara', color: 0x00c9a0, scene: 'MenuScene', ready: true },
       { id: 'spike', title: 'SPIKE RUN', subtitle: 'Geometry · Niveles', color: 0xff4466, scene: 'SpikeRunMenuScene', ready: true },
       { id: 'coin', title: 'COIN DROP', subtitle: 'Granja de monedas', color: 0xffb300, scene: 'CoinDropMenuScene', ready: true },
-      { id: 'orbit', title: 'ORBIT DODGE', subtitle: 'Esquiva asteroides', color: 0x2979ff, scene: 'OrbitMenuScene', ready: true },
+      { id: 'orbit', title: 'ORBIT WAR', subtitle: 'Esquiva asteroides y naves enemigas', color: 0x2979ff, scene: 'OrbitMenuScene', ready: true },
       { id: 'climb', title: 'WALL CLIMB', subtitle: 'Trepa las paredes', color: 0xff9800, scene: 'ClimbMenuScene', ready: true },
-      { id: 'reflex', title: 'REFLEX', subtitle: 'Toca el color', color: 0xe040fb, scene: 'ReflexMenuScene', ready: true }
+      { id: 'reflex', title: 'REFLEX MIND', subtitle: 'Toca el color', color: 0xe040fb, scene: 'ReflexMenuScene', ready: true }
     ];
 
     games.forEach((g, i) => {
@@ -63,7 +100,7 @@ export class HubScene extends Phaser.Scene {
       const card = this.add.rectangle(width / 2, y, 300, 62, g.ready ? g.color : 0x222233)
         .setInteractive({ useHandCursor: g.ready });
 
-    this.add.text(width / 2, y - 10, g.title, {
+      this.add.text(width / 2, y - 10, g.title, {
         fontFamily: 'Arial Black',
         fontSize: '18px',
         color: g.ready ? '#0a0a16' : '#555555'
@@ -92,8 +129,10 @@ export class HubScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.menuMusic = this.sound.add('menu', { loop: true, volume: 0.3 });
-    try {
-      this.menuMusic.play();
-    } catch (_) {}
+    if (!this.isMuted()) {
+      try {
+        this.menuMusic.play();
+      } catch (_) {}
+    }
   }
 }
