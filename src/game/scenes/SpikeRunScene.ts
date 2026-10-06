@@ -73,8 +73,6 @@ export class SpikeRunScene extends Phaser.Scene {
     this.solid = this.physics.add.group({ allowGravity: false, immovable: true });
     this.hazards = this.physics.add.group({ allowGravity: false });
     this.coins = this.physics.add.group({ allowGravity: false });
-
-    // Tramo inicial seguro
     this.spawnGroundBlock(0, 320);
     this.genX = 320;
 
@@ -201,7 +199,7 @@ export class SpikeRunScene extends Phaser.Scene {
     if (this.jumpsLeft <= 0) return;
 
     const body = this.player.body as Phaser.Physics.Arcade.Body;
-    const power = this.jumpsLeft === 2 ? -720 : -580;
+    const power = this.jumpsLeft === 2 ? -630 : -570;
     body.setVelocityY(power);
     this.jumpsLeft--;
 
@@ -448,7 +446,7 @@ export class SpikeRunScene extends Phaser.Scene {
 
     const menu = this.add.rectangle(width / 2, height * 0.64, 180, 42, 0x333355)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.64, 'MENÚ', {
+    this.add.text(width / 2, height * 0.64, 'MENÚ SPIKE RUN', {
       fontFamily: 'Arial',
       fontSize: '16px',
       color: '#ffffff'
@@ -457,7 +455,7 @@ export class SpikeRunScene extends Phaser.Scene {
 
     const hub = this.add.rectangle(width / 2, height * 0.74, 180, 42, 0x222240)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.74, 'HUB', {
+    this.add.text(width / 2, height * 0.74, 'HUB JUEGOS', {
       fontFamily: 'Arial',
       fontSize: '16px',
       color: '#ccccdd'

@@ -158,14 +158,14 @@ export class CoinDropScene extends Phaser.Scene {
 
     const menu = this.add.rectangle(width / 2, height * 0.70, 180, 42, 0x333355)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.70, 'MENÚ', {
+    this.add.text(width / 2, height * 0.70, 'MENÚ COIN DROP', {
       fontFamily: 'Arial', fontSize: '16px', color: '#ffffff'
     }).setOrigin(0.5);
     menu.on('pointerdown', () => this.scene.start('CoinDropMenuScene'));
 
     const hub = this.add.rectangle(width / 2, height * 0.80, 180, 42, 0x222240)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.80, 'HUB', {
+    this.add.text(width / 2, height * 0.80, 'HUB JUEGOS', {
       fontFamily: 'Arial', fontSize: '16px', color: '#ccccdd'
     }).setOrigin(0.5);
     hub.on('pointerdown', () => this.scene.start('HubScene'));
