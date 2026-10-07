@@ -122,10 +122,10 @@ export class HubScene extends Phaser.Scene {
       }
     });
 
-    this.add.text(width / 2, height - 28, 'Las monedas se comparten entre todos los juegos', {
+    this.add.text(width / 2, height - 50, 'Las monedas se comparten entre todos los juegos', {
       fontFamily: 'Arial',
-      fontSize: '11px',
-      color: '#555566'
+      fontSize: '14px',
+      color: '#ffffff'
     }).setOrigin(0.5);
 
     this.menuMusic = this.sound.add('menu', { loop: true, volume: 0.3 });
