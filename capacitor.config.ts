@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.tunombre.dashlanes',
-  appName: 'Dash Lanes',
+  appId: 'com.lalearraga9905.arcadepack',
+  appName: 'Arcade Pack',
   webDir: 'dist',
   server: {
     androidScheme: 'https'

@@ -1,3 +1,4 @@
+import { maybeShowGameOverAd } from '../ads';
 import Phaser from 'phaser';
 import { ScoreManager } from '../managers/ScoreManager';
 import { LevelManager } from '../managers/LevelManager';
@@ -134,5 +135,6 @@ export class GameOverScene extends Phaser.Scene {
     });
 
     this.sound.play('game_over', { volume: 0.55 });
+    maybeShowGameOverAd();
   }
 }
