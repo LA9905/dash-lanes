@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
   },
   plugins: {
     AdMob: {
-      // Los IDs reales los pones después de crear la app en AdMob
+      appIdAndroid: 'ca-app-pub-9199449066843163~5972741273',
     }
   }
 };
