@@ -53,8 +53,6 @@ export class GameScene extends Phaser.Scene {
   private runCoins = 0;
   private swipeStartX = 0;
   private swipeStartY = 0;
-  private swipeStartTime = 0;
-  private lastTapTime = 0;
   private laneChangedThisTouch = false;
   private ignoreTouch = false;
 
@@ -162,7 +160,7 @@ export class GameScene extends Phaser.Scene {
 
     this.input.once('pointerdown', () => this.unlockAudio());
 
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (this.isGameOver) return;
       if (!this.audioUnlocked) this.unlockAudio();
 
@@ -180,7 +178,6 @@ export class GameScene extends Phaser.Scene {
       this.ignoreTouch = false;
       this.swipeStartX = pointer.x;
       this.swipeStartY = pointer.y;
-      this.swipeStartTime = this.time.now;
       this.laneChangedThisTouch = false;
 
       if (pointer.x < width * 0.38) {
@@ -217,25 +214,11 @@ export class GameScene extends Phaser.Scene {
 
       const dx = pointer.x - this.swipeStartX;
       const dy = pointer.y - this.swipeStartY;
-      const dt = this.time.now - this.swipeStartTime;
 
       if (!this.laneChangedThisTouch && Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)) {
         if (dx > 0) this.player.changeLane(1);
         else this.player.changeLane(-1);
         return;
-      }
-
-      if (!this.laneChangedThisTouch && Math.abs(dx) < 15 && Math.abs(dy) < 15 && dt < 280) {
-        if (pointer.x > width * 0.30 && pointer.x < width * 0.70) {
-          const now = this.time.now;
-          if (now - this.lastTapTime < 320) {
-            this.player.jump();
-            this.playSound('jump', 0.5);
-            this.lastTapTime = 0;
-          } else {
-            this.lastTapTime = now;
-          }
-        }
       }
     });
 

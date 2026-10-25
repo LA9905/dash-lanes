@@ -155,6 +155,13 @@ export class ReflexScene extends Phaser.Scene {
         .setInteractive({ useHandCursor: true });
       btn.on('pointerdown', () => {
         if (this.memShowing || this.isOver) return;
+
+        // Feedback visual al tocar
+        btn.setScale(1.12);
+        this.time.delayedCall(180, () => {
+          if (btn.active) btn.setScale(1);
+        });
+
         if (i === this.memSequence[this.memStep]) {
           this.memStep++;
           if (this.memStep >= this.memSequence.length) this.onCorrect();
@@ -241,8 +248,15 @@ export class ReflexScene extends Phaser.Scene {
       const y = height * 0.42 + Math.floor(i / 2) * 95;
       const btn = this.add.rectangle(x, y, 130, 75, c.color)
         .setInteractive({ useHandCursor: true });
-      btn.on('pointerdown', () => {
+        btn.on('pointerdown', () => {
         if (this.seqShowing || this.isOver) return;
+
+        // Feedback visual al tocar
+        btn.setScale(1.12);
+        this.time.delayedCall(180, () => {
+          if (btn.active) btn.setScale(1);
+        });
+
         this.seqInput.push(i);
         const step = this.seqInput.length - 1;
         if (this.seqInput[step] !== this.seqPattern[step]) {
