@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CurrencyManager } from '../managers/CurrencyManager';
+import { maybeShowGameOverAd } from '../ads';
 
 export class CoinDropScene extends Phaser.Scene {
   private basket!: Phaser.Physics.Arcade.Sprite;
@@ -169,5 +170,7 @@ export class CoinDropScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '16px', color: '#ccccdd'
     }).setOrigin(0.5);
     hub.on('pointerdown', () => this.scene.start('HubScene'));
+    
+    maybeShowGameOverAd();
   }
 }

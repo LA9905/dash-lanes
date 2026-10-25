@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { CurrencyManager } from '../managers/CurrencyManager';
 import { ClimbLevelManager, type ClimbLevelConfig } from '../managers/ClimbLevelManager';
+import { maybeShowGameOverAd } from '../ads';
+
 
 type Hold = {
   y: number;
@@ -392,5 +394,7 @@ export class ClimbScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '14px', color: '#aa8866'
     }).setOrigin(0.5).setDepth(32);
     hub.on('pointerdown', () => this.scene.start('HubScene'));
+
+    maybeShowGameOverAd();
   }
 }

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CurrencyManager } from '../managers/CurrencyManager';
 import { OrbitLevelManager, type OrbitLevelConfig } from '../managers/OrbitLevelManager';
+import { maybeShowGameOverAd } from '../ads';
 
 export class OrbitScene extends Phaser.Scene {
   private ship!: Phaser.Physics.Arcade.Sprite;
@@ -468,5 +469,7 @@ export class OrbitScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '14px', color: '#aaaaaa'
     }).setOrigin(0.5);
     hub.on('pointerdown', () => this.scene.start('HubScene'));
+
+    maybeShowGameOverAd();
   }
 }

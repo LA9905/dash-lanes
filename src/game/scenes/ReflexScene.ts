@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { CurrencyManager } from '../managers/CurrencyManager';
 import { ReflexLevelManager, type ReflexLevelConfig } from '../managers/ReflexLevelManager';
+import { maybeShowGameOverAd } from '../ads';
+
 
 const COLORS = [
   { name: 'ROJO', color: 0xff4466, css: '#ff4466' },
@@ -380,5 +382,7 @@ export class ReflexScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '14px', color: '#aaaaaa'
     }).setOrigin(0.5);
     hub.on('pointerdown', () => this.scene.start('HubScene'));
+
+    maybeShowGameOverAd();
   }
 }

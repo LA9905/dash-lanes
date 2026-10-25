@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CurrencyManager } from '../managers/CurrencyManager';
 import { SpikeRunLevelManager, type SpikeLevelConfig } from '../managers/SpikeRunLevelManager';
+import { maybeShowGameOverAd } from '../ads';
 
 export class SpikeRunScene extends Phaser.Scene {
   private player!: Phaser.Physics.Arcade.Sprite;
@@ -461,5 +462,7 @@ export class SpikeRunScene extends Phaser.Scene {
       color: '#ccccdd'
     }).setOrigin(0.5);
     hub.on('pointerdown', () => this.scene.start('HubScene'));
+
+    maybeShowGameOverAd();
   }
 }
