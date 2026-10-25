@@ -374,12 +374,22 @@ export class ClimbScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '16px', color: '#ffffff'
     }).setOrigin(0.5).setDepth(31);
 
-    const retry = this.add.rectangle(width / 2, cam + height * 0.54, 180, 48, 0xff9800)
+    const nextLevel = this.currentLevel + 1;
+    const unlocked = ClimbLevelManager.getUnlocked();
+    const canPlayNext = this.levelUnlocked && nextLevel <= unlocked;
+
+    const primary = this.add.rectangle(width / 2, cam + height * 0.54, 180, 48, canPlayNext ? 0x00c9a0 : 0xff9800)
       .setInteractive({ useHandCursor: true }).setDepth(31);
-    this.add.text(width / 2, cam + height * 0.54, 'REINTENTAR', {
-      fontFamily: 'Arial Black', fontSize: '16px', color: '#1a1000'
+    this.add.text(width / 2, cam + height * 0.54, canPlayNext ? 'SIGUIENTE NIVEL' : 'REINTENTAR', {
+      fontFamily: 'Arial Black', fontSize: '16px', color: canPlayNext ? '#003328' : '#1a1000'
     }).setOrigin(0.5).setDepth(32);
-    retry.on('pointerdown', () => this.scene.restart({ level: this.currentLevel }));
+    primary.on('pointerdown', () => {
+      if (canPlayNext) {
+        this.scene.start('ClimbScene', { level: nextLevel });
+      } else {
+        this.scene.restart({ level: this.currentLevel });
+      }
+    });
 
     const menu = this.add.rectangle(width / 2, cam + height * 0.64, 180, 42, 0x4e342e)
       .setInteractive({ useHandCursor: true }).setDepth(31);

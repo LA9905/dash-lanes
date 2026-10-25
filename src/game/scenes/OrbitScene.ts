@@ -449,12 +449,22 @@ export class OrbitScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '16px', color: '#ffffff'
     }).setOrigin(0.5);
 
-    const retry = this.add.rectangle(width / 2, height * 0.52, 180, 48, 0x2979ff)
+    const nextLevel = this.currentLevel + 1;
+    const unlocked = OrbitLevelManager.getUnlocked();
+    const canPlayNext = this.levelUnlocked && nextLevel <= unlocked;
+
+    const primary = this.add.rectangle(width / 2, height * 0.52, 180, 48, canPlayNext ? 0x00c9a0 : 0x2979ff)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.52, 'REINTENTAR', {
+    this.add.text(width / 2, height * 0.52, canPlayNext ? 'SIGUIENTE NIVEL' : 'REINTENTAR', {
       fontFamily: 'Arial Black', fontSize: '16px', color: '#ffffff'
     }).setOrigin(0.5);
-    retry.on('pointerdown', () => this.scene.restart({ level: this.currentLevel }));
+    primary.on('pointerdown', () => {
+      if (canPlayNext) {
+        this.scene.start('OrbitScene', { level: nextLevel });
+      } else {
+        this.scene.restart({ level: this.currentLevel });
+      }
+    });
 
     const menu = this.add.rectangle(width / 2, height * 0.62, 180, 42, 0x333355)
       .setInteractive({ useHandCursor: true });

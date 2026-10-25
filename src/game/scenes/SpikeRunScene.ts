@@ -436,14 +436,24 @@ export class SpikeRunScene extends Phaser.Scene {
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    const retry = this.add.rectangle(width / 2, height * 0.54, 180, 48, 0xff4466)
+    const nextLevel = this.currentLevel + 1;
+    const unlocked = SpikeRunLevelManager.getUnlocked();
+    const canPlayNext = this.levelUnlocked && nextLevel <= unlocked;
+
+    const primary = this.add.rectangle(width / 2, height * 0.54, 180, 48, canPlayNext ? 0x00c9a0 : 0xff4466)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.54, 'REINTENTAR', {
+    this.add.text(width / 2, height * 0.54, canPlayNext ? 'SIGUIENTE NIVEL' : 'REINTENTAR', {
       fontFamily: 'Arial Black',
-      fontSize: '18px',
+      fontSize: '16px',
       color: '#ffffff'
     }).setOrigin(0.5);
-    retry.on('pointerdown', () => this.scene.restart({ level: this.currentLevel }));
+    primary.on('pointerdown', () => {
+      if (canPlayNext) {
+        this.scene.start('SpikeRunScene', { level: nextLevel });
+      } else {
+        this.scene.restart({ level: this.currentLevel });
+      }
+    });
 
     const menu = this.add.rectangle(width / 2, height * 0.64, 180, 42, 0x333355)
       .setInteractive({ useHandCursor: true });

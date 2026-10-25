@@ -86,20 +86,28 @@ export class GameOverScene extends Phaser.Scene {
       color: isNewRecord ? '#00ffcc' : '#666688'
     }).setOrigin(0.5);
 
-    // Botón Reintentar
-    const retryBg = this.add.rectangle(width / 2, height * 0.72, 220, 54, 0x00e6b8)
+    // ¿Desbloqueó el siguiente nivel?
+    const nextLevel = this.finalLevel + 1;
+    const unlocked = LevelManager.getCurrentUnlockedLevel();
+    const canPlayNext = nextLevel <= unlocked;
+
+    // Botón principal
+    const primaryBg = this.add.rectangle(width / 2, height * 0.72, 220, 54, canPlayNext ? 0x00c9a0 : 0x00e6b8)
       .setInteractive({ useHandCursor: true });
-    this.add.text(width / 2, height * 0.72, 'REINTENTAR', {
+    this.add.text(width / 2, height * 0.72, canPlayNext ? 'SIGUIENTE NIVEL' : 'REINTENTAR', {
       fontFamily: 'Arial Black',
-      fontSize: '20px',
+      fontSize: '18px',
       color: '#003328'
     }).setOrigin(0.5);
 
-    retryBg.on('pointerover', () => retryBg.setFillStyle(0x00ffcc));
-    retryBg.on('pointerout', () => retryBg.setFillStyle(0x00e6b8));
-    retryBg.on('pointerdown', () => {
-      const unlocked = LevelManager.getCurrentUnlockedLevel();
-      this.scene.start('GameScene', { level: this.finalLevel <= unlocked ? this.finalLevel : unlocked });
+    primaryBg.on('pointerover', () => primaryBg.setFillStyle(0x00ffcc));
+    primaryBg.on('pointerout', () => primaryBg.setFillStyle(canPlayNext ? 0x00c9a0 : 0x00e6b8));
+    primaryBg.on('pointerdown', () => {
+      if (canPlayNext) {
+        this.scene.start('GameScene', { level: nextLevel });
+      } else {
+        this.scene.start('GameScene', { level: this.finalLevel });
+      }
     });
 
     // Menú de Dash Lanes
